@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Scrapper - Search History{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3">Search History</h1>
+        <p class="lead">View and reuse your previous searches.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-dark-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Searches</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-funnel me-1"></i> Filter
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-2">
+                            <i class="bi bi-trash me-1"></i> Clear History
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="bg-dark-lighter">
+                            <tr>
+                                <th scope="col">Query</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Results</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in history %}
+                            <tr>
+                                <td>{{ item.query }}</td>
+                                <td>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ item.results|length }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="/search?q={{ item.query }}" class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Repeat Search">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </a>
+                                        <button class="btn btn-outline-info" data-bs-toggle="tooltip" data-bs-placement="top" title="View Results">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-clock-history display-1 text-secondary"></i>
+                    <h3 class="mt-3">No Search History</h3>
+                    <p class="text-secondary">Your search history will appear here.</p>
+                    <a href="/search" class="btn btn-primary mt-2">Start Searching</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<li><a href="/search?q=insurance+companies+NY"><i class="bi bi-search"></i> Insurance Companies NY</a></li>
+<li><a href="/search?q=tech+startups+SF"><i class="bi bi-search"></i> Tech Startups SF</a></li>
+<li><a href="/search?q=law+firms+Chicago"><i class="bi bi-search"></i> Law Firms Chicago</a></li>
+
+{% for item in history %}
+<li><a href="/search?q={{ item.query }}"><i class="bi bi-search"></i> {{ item.query }}</a></li>
+{% endfor %}
+{% endblock %}

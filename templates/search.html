@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Scrapper - Search{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3">Search</h1>
+        <div class="search-card">
+            <form id="searchForm" method="post" action="/search">
+                <div class="input-group">
+                    <input type="text" class="form-control shadow-none" placeholder="Search for companies (e.g., top insurance companies in NY)" name="query" value="{{ query if query else '' }}" required>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if companies %}
+<div class="row">
+    <!-- Company List Column -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-dark-light">
+                <h5 class="mb-0">Companies ({{ companies|length }})</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group company-list">
+                    {% for company in companies %}
+                    <div class="list-group-item company-card {% if loop.first %}active{% endif %}" data-company-id="{{ loop.index }}">
+                        <h5 class="mb-1">{{ company.name }}</h5>
+                        <p class="mb-1 small text-muted">{{ company.address }}</p>
+                        <small>
+                            <a href="{{ company.website }}" target="_blank" class="text-info">
+                                <i class="bi bi-link-45deg"></i> Website
+                            </a>
+                            <span class="ms-2 text-secondary">
+                                <i class="bi bi-people"></i> {{ company.contacts|length }} Contact(s)
+                            </span>
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contacts Column -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Contacts</h5>
+                <button id="expandAll" class="btn btn-sm btn-outline-primary" data-expanded="false">
+                    <i class="bi bi-chevron-down me-1"></i> Expand All
+                </button>
+            </div>
+            <div class="card-body" id="companyContacts">
+                {% for company in companies %}
+                <div class="company-contacts" id="contacts-{{ loop.index }}" style="display: {% if loop.first %}block{% else %}none{% endif %};">
+                    <h4 class="mb-3">{{ company.name }} Contacts</h4>
+                    
+                    {% if company.contacts|length > 0 %}
+                        {% for contact in company.contacts %}
+                        <div class="card contact-card">
+                            <div class="card-header contact-header">
+                                <div>
+                                    <h5 class="mb-0">{{ contact.name }}</h5>
+                                    <small class="text-muted">{{ contact.designation }}</small>
+                                </div>
+                                <i class="bi bi-chevron-down expand-icon"></i>
+                            </div>
+                            <div class="card-body contact-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><i class="bi bi-envelope me-2"></i> {{ contact.email }}</p>
+                                        <p><i class="bi bi-telephone me-2"></i> {{ contact.phone }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><i class="bi bi-geo-alt me-2"></i> {{ contact.address }}</p>
+                                        <p><i class="bi bi-info-circle me-2"></i> {{ contact.additional_info }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            No contacts found for this company.
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<li><a href="/search?q=insurance+companies+New+York+CEO+Founder+10">
+    <i class="bi bi-search"></i> 10 Insurance Companies in New York – Required: CEO, Founder
+</a></li>
+
+<li><a href="/search?q=tech+startups+New+York+CEO+Founder+Vice+President+10">
+    <i class="bi bi-search"></i> 10 Tech Startups in New York – Required: CEO, Founder, Vice President
+</a></li>
+
+<li><a href="/search?q=law+firms+New+York+Founder+Vice+President+10">
+    <i class="bi bi-search"></i> 10 Law Firms in New York – Required: Founder, Vice President
+</a></li>
+
+<li><a href="/search?q=real+estate+companies+New+York+CEO+10">
+    <i class="bi bi-search"></i> 10 Real Estate Companies in New York – Required: CEO
+</a></li>
+
+<li><a href="/search?q=marketing+agencies+New+York+CEO+Founder+Vice+President+10">
+    <i class="bi bi-search"></i> 10 Marketing Agencies in New York – Required: CEO, Founder, Vice President
+</a></li>
+
+
+{% if query %}
+<li><a href="/search?q={{ query }}" class="active"><i class="bi bi-search"></i> {{ query }}</a></li>
+{% endif %}
+{% endblock %}

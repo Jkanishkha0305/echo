@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Scrapper - Inbox{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3 text-white">Inbox</h1>
+        <p class="lead text-secondary">View and manage your emails.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card bg-dark text-white mb-4 same-height">
+            <div class="card-header border-secondary">
+                <h5 class="mb-0">Inbox</h5>
+            </div>
+            <div class="card-body inbox-list">
+                <ul class="list-group list-group-flush" id="inbox-items">
+                    <li class="list-group-item bg-dark text-white border-secondary inbox-item unread" onclick="loadChat(1, this)">
+                        <h6 class="mb-1">John Doe <span class="unread-dot">●</span> <span class="unread-label">Unread</span></h6>
+                        <p class="mb-1 text-white">Insurance policy renewal inquiry.</p>
+                        <small class="text-white">10:30 AM</small>
+                    </li>
+                    <li class="list-group-item bg-dark text-white border-secondary inbox-item unread" onclick="loadChat(2, this)">
+                        <h6 class="mb-1">Alice Smith <span class="unread-dot">●</span> <span class="unread-label">Unread</span></h6>
+                        <p class="mb-1 text-white">Tech startup investment discussion.</p>
+                        <small class="text-white">Yesterday</small>
+                    </li>
+                    <li class="list-group-item bg-dark text-white border-secondary inbox-item" onclick="loadChat(3, this)">
+                        <h6 class="mb-1">Mark Johnson</h6>
+                        <p class="mb-1 text-white">Real estate insurance proposal.</p>
+                        <small class="text-white">2 days ago</small>
+                    </li>
+                    <li class="list-group-item bg-dark text-white border-secondary inbox-item unread" onclick="loadChat(4, this)">
+                        <h6 class="mb-1">Emily Davis <span class="unread-dot">●</span> <span class="unread-label">Unread</span></h6>
+                        <p class="mb-1 text-white">Business partnership inquiry.</p>
+                        <small class="text-white">3 days ago</small>
+                    </li>
+                    <li class="list-group-item bg-dark text-white border-secondary inbox-item" onclick="loadChat(5, this)">
+                        <h6 class="mb-1">Michael Brown</h6>
+                        <p class="mb-1 text-white">Follow-up on last meeting.</p>
+                        <small class="text-white">Last week</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card bg-dark text-white same-height">
+            <div class="card-header border-secondary">
+                <h5 class="mb-0">Chat</h5>
+            </div>
+            <div class="card-body chat-box" id="chat-box">
+                <p class="text-secondary">Select a message to view the conversation.</p>
+            </div>
+            <div class="card-footer bg-secondary">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="chat-input" placeholder="Type a reply...">
+                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .same-height {
+        height: 500px;
+    }
+    .inbox-list {
+        height: calc(100% - 56px);
+        overflow-y: auto;
+    }
+    
+    .chat-box {
+        height: calc(100% - 56px);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .inbox-item:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        cursor: pointer;
+    }
+    .chat-message {
+        padding: 8px 12px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        max-width: 75%;
+    }
+    .received {
+        background-color: #333;
+        align-self: flex-start;
+    }
+    .sent {
+        background-color: #007bff;
+        color: white;
+        align-self: flex-end;
+    }
+    .unread {
+        font-weight: bold;
+    }
+    .unread-dot {
+        color: red;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+    .unread-label {
+        background: red;
+        color: white;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 5px;
+        margin-left: 8px;
+    }
+</style>
+
+<script>
+    function loadChat(emailId, element) {
+        let chatBox = document.getElementById("chat-box");
+        chatBox.innerHTML = "<p class='text-secondary'>Loading conversation...</p>";
+
+        setTimeout(() => {
+            let chats = {
+                1: { sender: "John Doe", messages: [
+                    { text: "Hi, I’d like to check the renewal options for my insurance.", type: "received" },
+                    { text: "Sure! I can provide details on available policies.", type: "sent" },
+                    { text: "That would be great! Please share the best options.", type: "received" }
+                ] },
+                2: { sender: "Alice Smith", messages: [
+                    { text: "Hey, I wanted to discuss investment opportunities in our new startup.", type: "received" },
+                    { text: "Sounds interesting! What are the key benefits for investors?", type: "sent" },
+                    { text: "We have a strong growth plan and solid early traction.", type: "received" }
+                ] },
+                3: { sender: "Mark Johnson", messages: [
+                    { text: "I’d like to get a quote for real estate insurance.", type: "received" },
+                    { text: "Sure! Can you provide details about the property?", type: "sent" },
+                    { text: "Yes, it's a commercial building located in downtown.", type: "received" }
+                ] }
+            };
+
+            let chat = chats[emailId];
+            chatBox.innerHTML = "";
+            chat.messages.forEach(msg => {
+                let msgDiv = document.createElement("div");
+                msgDiv.classList.add("chat-message", msg.type);
+                msgDiv.textContent = msg.text;
+                chatBox.appendChild(msgDiv);
+            });
+        }, 500);
+
+        if (element) {
+            element.classList.remove("unread");
+            let dot = element.querySelector(".unread-dot");
+            let label = element.querySelector(".unread-label");
+            if (dot) dot.remove();
+            if (label) label.remove();
+        }
+    }
+</script>
+{% endblock %}

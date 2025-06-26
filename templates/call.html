@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Scrapper - Call{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3">Call</h1>
+        <p class="lead">Manage your calls and schedule appointments.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-dark-light">
+                <h5 class="mb-0">Recent Contacts</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-primary d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                <span class="text-white">JS</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">John Smith</h6>
+                                <small class="text-muted">NY Insurance Group</small>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                <span class="text-white">MB</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Michael Brown</h6>
+                                <small class="text-muted">Empire State Insurance</small>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-success d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                <span class="text-white">DR</span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">David Rodriguez</h6>
+                                <small class="text-muted">Brooklyn Coverage Co.</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="p-3">
+                    <button class="btn btn-outline-primary w-100">
+                        <i class="bi bi-person-plus me-1"></i> View All Contacts
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-dark-light">
+                <h5 class="mb-0">Call History</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">John Smith</h6>
+                                <small class="text-muted">NY Insurance Group</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-success">Outgoing</span>
+                                <div><small class="text-muted">Yesterday, 2:30 PM</small></div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Michael Brown</h6>
+                                <small class="text-muted">Empire State Insurance</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-danger">Missed</span>
+                                <div><small class="text-muted">Mar 28, 10:15 AM</small></div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">Sarah Johnson</h6>
+                                <small class="text-muted">NY Insurance Group</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary">Incoming</span>
+                                <div><small class="text-muted">Mar 25, 4:45 PM</small></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-dark-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Dialpad</h5>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-headset me-1"></i> Connect Headset
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <input type="text" class="form-control form-control-lg" placeholder="Enter phone number or search contacts">
+                </div>
+                
+                <div class="row text-center mb-4">
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">1</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">2</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">3</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">4</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">5</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">6</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">7</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">8</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">9</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">*</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">0</button>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <button class="btn btn-outline-light btn-lg w-100">#</button>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-success btn-lg rounded-circle p-3 me-3">
+                        <i class="bi bi-telephone-fill fs-3"></i>
+                    </button>
+                    <button class="btn btn-danger btn-lg rounded-circle p-3 ms-3" disabled>
+                        <i class="bi bi-telephone-x-fill fs-3"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-dark-light">
+                <h5 class="mb-0">Upcoming Scheduled Calls</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> 
+                    No scheduled calls. Use the calendar to schedule a new call.
+                </div>
+                
+                <button class="btn btn-primary">
+                    <i class="bi bi-calendar-plus me-1"></i> Schedule Call
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<li><a href="/search?q=insurance+companies+NY"><i class="bi bi-search"></i> Insurance Companies NY</a></li>
+<li><a href="/search?q=tech+startups+SF"><i class="bi bi-search"></i> Tech Startups SF</a></li>
+<li><a href="/search?q=law+firms+Chicago"><i class="bi bi-search"></i> Law Firms Chicago</a></li>
+{% endblock %}

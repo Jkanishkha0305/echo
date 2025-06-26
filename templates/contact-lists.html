@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Scrapper - Contact Lists{% endblock %}
+
+{% block content %}
+<style>
+    /* Styling for tables and buttons */
+    .table tbody td, th {
+        color: white;
+        white-space: nowrap;
+        font-size: small;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table-bordered th, .table-bordered td {
+        border: 1px solid white !important;
+    }
+
+    .btn-link {
+        text-decoration: none;
+        color: #007bff;
+    }
+
+    .toggle-details {
+        display: inline-block;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .contact-details {
+        display: none;
+        background-color: #f8f9fa;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 5px;
+    }
+
+    .card-header.bg-dark-light {
+        background-color: #343a40 !important;
+        color: white;
+    }
+
+    .card-body {
+        background-color: #2d2d2d;
+    }
+
+    .btn-outline-primary, .btn-outline-success, .btn-outline-secondary {
+        margin-left: 5px;
+    }
+</style>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3">Contact Lists</h1>
+        <p class="lead">Manage and organize your saved contact lists.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-dark-light">
+                <h5 class="mb-0">Your Lists</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group" id="contact-lists">
+                    {% for list in contact_lists %}
+                    <li class="list-group-item list-item" data-list-id="{{ list.id }}">
+                        <h6 class="mb-0">{{ list.name }}</h6>
+                        <small class="text-muted">{{ list.contacts|length }} Contacts</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Contacts</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary">Refresh Emails Status</button>
+                    <button class="btn btn-sm btn-outline-success" id="sendEmailBtn">Send Email to All</button>
+                    <button class="btn btn-sm btn-outline-secondary">Filter By</button>
+                </div>
+            </div>
+            <div class="card-body" id="contact-details">
+                <div class="table-responsive">
+                    <table class="table table-bordered border-white">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Job Title</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Additional Info</th>
+                                <th>Status</th>
+                                <th>Opened</th>
+                                <th>Replied</th>
+                                <th>Bounced</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contacts-table-body">
+                          
+                        </tbody>
+                    </table>
+                </div>
+                <button id="loadMore" class="btn btn-primary w-100 mt-2" style="display: none;">Show More</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let contactLists = document.getElementById("contact-lists");
+    let contactsTableBody = document.getElementById("contacts-table-body");
+    let loadMoreButton = document.getElementById("loadMore");
+    let activeListId = null;  // Track the currently selected list (initially null)
+    let currentOffset = 0;    // Offset for pagination
+    const limit = 10;         // Number of contacts to load per request
+
+    // Function to fetch contacts and append them to the table
+    function fetchContacts(listId, offset = 0) {
+        fetch(`/contact-lists/${listId}/more?offset=${offset}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                data.contacts.forEach(contact => {
+                    let row = `
+                        <tr>
+                            <td>${contact.name || "N/A"}</td>
+                            <td>${contact.designation || "N/A"}</td>
+                            <td>${contact.email || "N/A"}</td>
+                            <td>${contact.phone || "N/A"}</td>
+                            <td>${contact.address || "N/A"}</td>
+                            <td>${contact.additional_info || "N/A"}</td>
+                            <td>${contact.status || "Not Sent yet"}</td>
+                            <td>${contact.opened ? "Yes" : "No"}</td>
+                            <td>${contact.replied ? "Yes" : "No"}</td>
+                            <td>${contact.bounced !== undefined ? (contact.bounced ? "Yes" : "No") : "No"}</td>
+                        </tr>`;
+                    contactsTableBody.innerHTML += row;
+                });
+
+                currentOffset += data.contacts.length;
+                loadMoreButton.style.display = data.show_more ? "block" : "none";
+            })
+            .catch(error => {
+                contactsTableBody.innerHTML = `<tr><td colspan="10" class="text-danger text-center">${error.message}</td></tr>`;
+            });
+    }
+
+    let sendEmailBtn = document.getElementById("sendEmailBtn");
+sendEmailBtn.addEventListener("click", function () {
+    if (!activeListId) {
+        alert("Please select a contact list first.");
+        return;
+    }
+
+    // Make sure list_id is an integer
+    const listId = parseInt(activeListId, 10);
+
+    // Redirect to the /email route with the list_id as a query parameter
+    window.location.href = "/email?list_id=" + listId;
+    });
+
+    // Auto-load the first contact list if available
+    let firstListItem = contactLists.querySelector(".list-item");
+    if (firstListItem) {
+        firstListItem.classList.add("active");
+        activeListId = firstListItem.getAttribute("data-list-id");
+        fetchContacts(parseInt(activeListId, 10));  // Make sure the ID is an integer
+    }
+
+    // Handle selecting a contact list
+    contactLists.addEventListener("click", function (event) {
+        let listItem = event.target.closest(".list-item");
+        if (!listItem) return;
+
+        document.querySelectorAll(".list-item").forEach(item => item.classList.remove("active"));
+        listItem.classList.add("active");
+
+        activeListId = listItem.getAttribute("data-list-id");
+        contactsTableBody.innerHTML = `<tr><td colspan="10" class="text-center"></td></tr>`;
+        fetchContacts(parseInt(activeListId, 10));  // Make sure the ID is an integer
+    });
+
+    // Handle the "Load More" button
+    loadMoreButton.addEventListener("click", function () {
+        if (activeListId) {
+            fetchContacts(parseInt(activeListId, 10), currentOffset);  // Make sure the ID is an integer
+        }
+    });
+});
+
+</script>
+{% endblock %}

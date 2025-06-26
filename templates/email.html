@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Scrapper - Email{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="mb-3">Email</h1>
+        <p class="lead">Send emails to your contacts.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Templates</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="mb-1">Introduction</h5>
+                        <p class="mb-1">Introduce yourself and your services.</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="mb-1">Follow-up</h5>
+                        <p class="mb-1">Follow up after a meeting or call.</p>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <h5 class="mb-1">Proposal</h5>
+                        <p class="mb-1">Send a business proposal.</p>
+                    </a>
+                </div>
+                <button class="btn btn-outline-primary mt-3 w-100">
+                    <i class="bi bi-plus-lg me-1"></i> New Template
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Compose Email</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="recipients" class="form-label">To</label>
+                        <div id="email-container" class="email-container d-flex flex-wrap p-2" style="max-height: 120px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px;">
+                            {% if contact_list.contacts|length > 0 %}
+                                {% for contact in contact_list.contacts[:10] %}
+                                    <div class="email-tag d-flex align-items-center me-1 mb-1" style="font-size: 12px; background-color: #333; color: #fff; padding: 2px 5px; border-radius: 10px;">
+                                        <input type="text" class="form-control form-control-sm" value="{{ contact.email }}" readonly style="border: none; background: transparent; font-size: 12px; width: auto; padding: 0; color: #fff;">
+                                        <button type="button" class="btn btn-sm btn-danger ms-1 remove-email" style="padding: 1px 4px; font-size: 10px;">X</button>
+                                        <input type="hidden" name="recipients" value="{{ contact.email }}">
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No contacts available. Please select a list first: <a href="/contact-lists">Lists</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 position-relative">
+                        <label for="subject" class="form-label">Subject</label>
+                        <div class="position-relative">
+                            <input type="text" class="form-control" id="subject" placeholder="Enter subject">
+                            <button type="button" class="btn btn-outline-secondary ai-btn" onclick="showPopup('subject')">
+                                <i class="bi bi-stars"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                        <label for="message" class="form-label">Message</label>
+                        <div class="position-relative">
+                            <textarea class="form-control" id="message" rows="6" placeholder="Write your message here..."></textarea>
+                            <button type="button" class="btn btn-outline-secondary ai-btn" onclick="showPopup('message')">
+                                <i class="bi bi-stars"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary">
+                            <i class="bi bi-paperclip"></i> Attach
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Send
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Instruction Modal -->
+<div class="modal fade" id="aiModal" tabindex="-1" aria-labelledby="aiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aiModalLabel">Generate Content</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="aiInstructions" class="form-label">Enter instructions for AI:</label>
+                <textarea class="form-control" id="aiInstructions" rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="generateContent()">Generate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ai-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        padding: 5px 10px;
+        font-size: 14px;
+        height: auto;
+    }
+</style>
+
+<script>
+    let targetField = "";
+
+    function showPopup(fieldId) {
+        targetField = fieldId;
+        var myModal = new bootstrap.Modal(document.getElementById('aiModal'));
+        myModal.show();
+    }
+
+    function generateContent() {
+        let instructions = document.getElementById("aiInstructions").value;
+        if (!instructions.trim()) {
+            alert("Please provide instructions for AI.");
+            return;
+        }
+        
+        fetch('/generate-ai-response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ instructions: instructions })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById(targetField).value = data.response;
+            var myModal = bootstrap.Modal.getInstance(document.getElementById('aiModal'));
+            myModal.hide();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to generate content. Please try again.');
+        });
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("email-container").addEventListener("click", function(event) {
+            if (event.target.classList.contains("remove-email")) {
+                event.target.parentElement.remove();
+            }
+        });
+    });
+</script>
+{% endblock %}
