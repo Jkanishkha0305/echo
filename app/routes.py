@@ -33,7 +33,6 @@ from datetime import datetime, timezone
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 
-
 import os 
 from dotenv import load_dotenv
 load_dotenv()
